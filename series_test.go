@@ -1,6 +1,9 @@
-package api
+package tvdb
 
-import "testing"
+import (
+	"testing"
+	"encoding/xml"
+)
 
 const BANSHEE_TEST = `
 <?xml version="1.0" encoding="UTF-8" ?>
@@ -20,7 +23,8 @@ const BANSHEE_TEST = `
 `
 
 func TestBanshee(t *testing.T) {
-	data, err := ParseGetSeries([]byte(BANSHEE_TEST))
+	var data GetSeriesData
+	err := xml.Unmarshal([]byte(BANSHEE_TEST), &data)
 	if err != nil {
 		t.Error(err)
 	}

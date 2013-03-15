@@ -1,4 +1,4 @@
-package api
+package tvdb
 
 import (
 	"encoding/xml"
