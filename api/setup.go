@@ -4,14 +4,29 @@ import (
 	"net/url"
 	"net/http"
 	"io/ioutil"
+	"encoding/xml"
+	"fmt"
 )
 
 const (
 	TVDB_API = "http://thetvdb.com/api/"
+	TVDB_DEFAULT_KEY = "CACE3A94B49F1566"
 )
 
-func GetURL(path string, args *url.Values) (string, error) {
-	query, err := url.Parse(TVDB_API)
+type TVDB struct {
+	Location string
+	ApiKey string
+}
+
+func Open() *TVDB {
+	return &TVDB{
+		Location: TVDB_API,
+		ApiKey: TVDB_DEFAULT_KEY,
+	}
+}
+
+func (t *TVDB) GetURL(path string, args *url.Values) (string, error) {
+	query, err := url.Parse(t.Location)
 	if err != nil {
 		return "", err
 	}
@@ -41,5 +56,23 @@ func HttpGet(query string) ([]byte, error) {
 		return nil, err
 	}
 
+	fmt.Println(string(body))
+
 	return body, nil
+}
+
+func (t *TVDB) QueryURL(path string, args *url.Values) ([]byte, error) {
+	query, err := t.GetURL(path, args)
+	if err != nil {
+		return nil, err
+	}
+	return HttpGet(query)
+}
+
+func (t *TVDB) QueryAndUnmarshal(path string, args *url.Values, result interface{}) error {
+	body, err := t.QueryURL(path, args)
+	if err != nil {
+		return err
+	}
+    return xml.Unmarshal(body, result)
 }

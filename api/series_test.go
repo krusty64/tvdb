@@ -24,6 +24,10 @@ func TestBanshee(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	if data.Series[0].SeriesName != "Banshee" {
+		t.Error("SeriesName != Banshee")
+	}
 }
 
 const TOUCH_TEST = `
