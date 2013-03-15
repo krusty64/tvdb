@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"io/ioutil"
 	"fmt"
+	"strconv"
 )
 
 type Series struct {
@@ -31,30 +32,68 @@ func ParseGetSeries(body []byte) (result *GetSeriesData, err error) {
 	return
 }
 
-func GetSeriesURL(seriesname, language string) (string, error) {
-	query, err := url.Parse(TVDB_API)
-	if err != nil {
-		return "", err
+func GetSeriesURL(seriesname, language string) (result string, err error) {
+	var args url.Values
+	if seriesname == "" {
+		err = fmt.Errorf("GetSeriesURL: Series name must not be empty")
+		return
 	}
 
-	if query, err = query.Parse("GetSeries.php"); err != nil {
-		return "", err
-	}
-
-	args := url.Values{}
 	args.Add("seriesname", seriesname)
-	args.Add("language", language)
-	query.RawQuery = args.Encode()
 
-	return query.String(), nil
+	if language != "" {
+		args.Add("language", language)
+	}
+
+	return GetURL("GetSeries.php", &args)
 }
+
+
 
 func GetSeries(seriesname, language string) ([]*Series, error) {
 	query, err := GetSeriesURL(seriesname, language)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(query)
+
+	body, err := HttpGet(query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := ParseGetSeries(body)
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*Series, 0, len(data.Series))
+	for _, v := range data.Series {
+		result = append(result, &v)
+	}
+
+	return result, nil
+}
+
+func GetEpisodesURL(apikey string, seriesid int, language string) (string, error) {
+	query, err := url.Parse(TVDB_API)
+	if err != nil {
+		return "", err
+	}
+
+	if query, err = query.Parse(apikey + "/series/" + strconv.Itoa(seriesid) + "/all/" + language + ".xml"); err != nil {
+		return "", err
+	}
+
+	return query.String(), nil
+}
+
+func GetEpisodes(apikey string, seriesid int, language string) (error, error) {
+	query, err := GetEpisodesURL(apikey, seriesid, language)
+	if err != nil {
+		return nil, err
+	}
 	var resp *http.Response
 	if resp, err = http.Get(query); err != nil {
 		return nil, err
@@ -68,11 +107,9 @@ func GetSeries(seriesname, language string) ([]*Series, error) {
 		return nil, err
 	}
 
-	data, err := ParseGetSeries(body)
-	fmt.Println(err)
-	fmt.Println(data)
-
 	fmt.Println(string(body))
 
 	return nil, nil
 }
+
+func GetEpisodeByDefault(apikey string, seriesid int, language string)
