@@ -7,7 +7,7 @@ import (
 )
 
 type Series struct {
-	XML []byte `xml:",innerxml"`
+	XMLName xml.Name `xml:"Series"`
 	SeriesId int `xml:"seriesid"`
 	Language string `xml:"language"`
 	SeriesName string
@@ -20,7 +20,6 @@ type Series struct {
 }
 
 type GetSeriesData struct {
-	XML []byte `xml:",innerxml"`
 	XMLName xml.Name `xml:"Data"`
 	Series []Series
 }
