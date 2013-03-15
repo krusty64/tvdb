@@ -7,6 +7,7 @@ import (
 )
 
 type Series struct {
+	XML []byte `xml:",innerxml"`
 	SeriesId int `xml:"seriesid"`
 	Language string `xml:"language"`
 	SeriesName string
@@ -19,12 +20,13 @@ type Series struct {
 }
 
 type GetSeriesData struct {
+	XML []byte `xml:",innerxml"`
 	XMLName xml.Name `xml:"Data"`
 	Series []Series
 }
 
 func (t *TVDB) GetSeries(seriesname, language string) ([]Series, error) {
-	var args url.Values
+	args := &url.Values{}
 	if seriesname == "" {
 		return nil, fmt.Errorf("GetSeriesURL: Series name must not be empty")
 	}
@@ -36,7 +38,7 @@ func (t *TVDB) GetSeries(seriesname, language string) ([]Series, error) {
 	}
 
 	var data GetSeriesData
-	err := t.QueryAndUnmarshal("GetSeries.php", &args, &data)
+	err := t.QueryAndUnmarshal("GetSeries.php", args, &data)
 
 	if err != nil {
 		return nil, err

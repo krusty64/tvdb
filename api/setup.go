@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"io/ioutil"
 	"encoding/xml"
-	"fmt"
 )
 
 const (
@@ -55,8 +54,6 @@ func HttpGet(query string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(string(body))
 
 	return body, nil
 }
