@@ -35,7 +35,7 @@ type Episode struct {
 	Language string
 }
 
-type singleEpisodeData struct {
+type SingleEpisodeData struct {
 	XMLName xml.Name `xml:"Data"`
 	Episode *Episode
 }
@@ -46,18 +46,11 @@ type FullSeriesData struct {
 	Episode []Episode
 }
 
-func (t *TVDB) GetEpisodeBySeasonEp(seriesId, season, episode int, language string) (result *Episode, err error) {
-	var data singleEpisodeData
-	err = t.QueryAndUnmarshal(t.ApiKey + "/series/" + strconv.Itoa(seriesId) + "/default/" + strconv.Itoa(season) +
-				"/" + strconv.Itoa(episode) + "/" + language + ".xml", nil, &data)
-	if err != nil {
-		return
-	}
-	result = data.Episode
-	return
+func (t *TVDB) GetEpisodeBySeasonEp(seriesId, season, episode int, language string) ([]byte, error) {
+	return t.QueryURL(t.ApiKey + "/series/" + strconv.Itoa(seriesId) + "/default/" + strconv.Itoa(season) +
+				"/" + strconv.Itoa(episode) + "/" + language + ".xml", nil)
 }
 
-func (t *TVDB) GetFullSeriesData(seriesId int, language string) (result FullSeriesData, err error) {
-	err = t.QueryAndUnmarshal(t.ApiKey + "/series/" + strconv.Itoa(seriesId) + "/all/" + language + ".xml", nil, &result)
-	return
+func (t *TVDB) GetFullSeriesData(seriesId int, language string) ([]byte, error) {
+	return t.QueryURL(t.ApiKey + "/series/" + strconv.Itoa(seriesId) + "/all/" + language + ".xml", nil)
 }

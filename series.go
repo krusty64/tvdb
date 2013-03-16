@@ -24,7 +24,7 @@ type GetSeriesData struct {
 	Series []Series
 }
 
-func (t *TVDB) GetSeries(seriesname, language string) ([]Series, error) {
+func (t *TVDB) GetSeries(seriesname, language string) ([]byte, error) {
 	args := &url.Values{}
 	if seriesname == "" {
 		return nil, fmt.Errorf("GetSeriesURL: Series name must not be empty")
@@ -36,12 +36,13 @@ func (t *TVDB) GetSeries(seriesname, language string) ([]Series, error) {
 		args.Add("language", language)
 	}
 
-	var data GetSeriesData
-	err := t.QueryAndUnmarshal("GetSeries.php", args, &data)
+	return t.QueryURL("GetSeries.php", args)
+}
 
-	if err != nil {
+func ParseGetSeries(src []byte) (*GetSeriesData, error) {
+	var result GetSeriesData
+	if err := xml.Unmarshal(src, &result); err != nil {
 		return nil, err
 	}
-
-	return data.Series, nil
+	return &result, nil
 }
