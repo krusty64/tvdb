@@ -51,6 +51,22 @@ func (t *TVDB) GetEpisodeBySeasonEp(seriesId, season, episode int, language stri
 				"/" + strconv.Itoa(episode) + "/" + language + ".xml", nil)
 }
 
+func ParseSingleEpisode(src []byte) (*SingleEpisodeData, error) {
+	var r SingleEpisodeData
+	if err := xml.Unmarshal(src, &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
+
+func ParseEpisode(src []byte) (*Episode, error) {
+	var r Episode
+	if err := xml.Unmarshal(src, &r); err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
+
 func (t *TVDB) GetFullSeriesData(seriesId int, language string) ([]byte, error) {
 	return t.QueryURL(t.ApiKey + "/series/" + strconv.Itoa(seriesId) + "/all/" + language + ".xml", nil)
 }
