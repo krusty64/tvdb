@@ -1,26 +1,26 @@
 package tvdb
 
 import (
-	"net/url"
-	"net/http"
-	"io/ioutil"
 	"encoding/xml"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 )
 
 const (
-	TVDB_API = "http://thetvdb.com/api/"
+	TVDB_API         = "http://thetvdb.com/api/"
 	TVDB_DEFAULT_KEY = "CACE3A94B49F1566"
 )
 
 type TVDB struct {
 	Location string
-	ApiKey string
+	ApiKey   string
 }
 
 func Open() *TVDB {
 	return &TVDB{
 		Location: TVDB_API,
-		ApiKey: TVDB_DEFAULT_KEY,
+		ApiKey:   TVDB_DEFAULT_KEY,
 	}
 }
 
@@ -71,5 +71,5 @@ func (t *TVDB) QueryAndUnmarshal(path string, args *url.Values, result interface
 	if err != nil {
 		return err
 	}
-    return xml.Unmarshal(body, result)
+	return xml.Unmarshal(body, result)
 }

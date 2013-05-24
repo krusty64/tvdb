@@ -1,8 +1,8 @@
 package tvdb
 
 import (
-	"testing"
 	"encoding/xml"
+	"testing"
 )
 
 const BANSHEE_TEST = `
