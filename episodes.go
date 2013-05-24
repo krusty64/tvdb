@@ -1,38 +1,38 @@
 package tvdb
 
 import (
-	"strconv"
 	"encoding/xml"
+	"strconv"
 )
 
 type Episode struct {
-	Id uint64 `xml:"id"`
-	SeasonId uint64 `xml:"seasonid"`
+	Id                    uint64 `xml:"id"`
+	SeasonId              uint64 `xml:"seasonid"`
 	CombinedEpisodeNumber string `xml:"Combined_episodenumber"`
-	CombinedSeason string `xml:"Combined_season"`
-	EpisodeName string
-	EpisodeNumber int
-	SeasonNumber int
-	FirstAired string
-	Director string
-	Writer string
-	GuestStars string
-	Overview string
-	ProductionCode string
-	LastUpdated uint64 `xml:"lastupdated"`
-	Flagged int `xml:"flagged"`
-	DvdDiscId string `xml:"DVD_discid"`
-	DvdSeason string `xml:"DVD_season"`
-	DvdEpisodeNumber string `xml:"DVD_episodenumber"`
-	DvdChapter string `xml:"DVD_chapter"`
-	AbsoluteNumber string `xml:"absolute_number"`
-	Filename string `xml:"filename"`
-	SeriesId uint64 `xml:"seriesid"`
-	MirrorUpdate string `xml:"mirrorupdate"`
-	ImdbId string `xml:"IMDB_ID"`
-	EpImgFlag string
-	Rating string
-	Language string
+	CombinedSeason        string `xml:"Combined_season"`
+	EpisodeName           string
+	EpisodeNumber         int
+	SeasonNumber          int
+	FirstAired            string
+	Director              string
+	Writer                string
+	GuestStars            string
+	Overview              string
+	ProductionCode        string
+	LastUpdated           uint64 `xml:"lastupdated"`
+	Flagged               int    `xml:"flagged"`
+	DvdDiscId             string `xml:"DVD_discid"`
+	DvdSeason             string `xml:"DVD_season"`
+	DvdEpisodeNumber      string `xml:"DVD_episodenumber"`
+	DvdChapter            string `xml:"DVD_chapter"`
+	AbsoluteNumber        string `xml:"absolute_number"`
+	Filename              string `xml:"filename"`
+	SeriesId              uint64 `xml:"seriesid"`
+	MirrorUpdate          string `xml:"mirrorupdate"`
+	ImdbId                string `xml:"IMDB_ID"`
+	EpImgFlag             string
+	Rating                string
+	Language              string
 }
 
 type SingleEpisodeData struct {
@@ -42,13 +42,13 @@ type SingleEpisodeData struct {
 
 type FullSeriesData struct {
 	XMLName xml.Name `xml:"Data"`
-	Series Series
+	Series  Series
 	Episode []Episode
 }
 
 func (t *TVDB) GetEpisodeBySeasonEp(seriesId, season, episode int, language string) ([]byte, error) {
-	return t.QueryURL(t.ApiKey + "/series/" + strconv.Itoa(seriesId) + "/default/" + strconv.Itoa(season) +
-				"/" + strconv.Itoa(episode) + "/" + language + ".xml", nil)
+	return t.QueryURL(t.ApiKey+"/series/"+strconv.Itoa(seriesId)+"/default/"+strconv.Itoa(season)+
+		"/"+strconv.Itoa(episode)+"/"+language+".xml", nil)
 }
 
 func ParseSingleEpisode(src []byte) (*SingleEpisodeData, error) {
@@ -68,5 +68,13 @@ func ParseEpisode(src []byte) (*Episode, error) {
 }
 
 func (t *TVDB) GetFullSeriesData(seriesId int, language string) ([]byte, error) {
-	return t.QueryURL(t.ApiKey + "/series/" + strconv.Itoa(seriesId) + "/all/" + language + ".xml", nil)
+	return t.QueryURL(t.ApiKey+"/series/"+strconv.Itoa(seriesId)+"/all/"+language+".xml", nil)
+}
+
+func ParseFullSeriesData(src []byte) (*FullSeriesData, error) {
+	var f FullSeriesData
+	if err := xml.Unmarshal(src, &f); err != nil {
+		return nil, err
+	}
+	return &f, nil
 }
